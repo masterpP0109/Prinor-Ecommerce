@@ -8,6 +8,12 @@ import NavBarFavorite from './navFavorite/index';
 import NavBarProfile from './navProfile/index';
 import NavBarShopping from './navShopping/index';
 
+const STORE_SECTIONS = [
+  { name: "Store", link: "/store/products" },
+  { name: "Digital", link: "/store/digital" },
+  { name: "Services", link: "/store/services" },
+];
+
 const NAVBAR_ITEMS = [
   { name: "Computer", link: "/list/pc-laptops/computer" },
   { name: "Laptop", link: "/list/pc-laptops/laptops" },
@@ -69,8 +75,8 @@ const StoreNavBar = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            <NavBarProfile />
             <NavBarFavorite />
+            <NavBarProfile />
             <NavBarShopping />
           </div>
         </div>
@@ -80,6 +86,20 @@ const StoreNavBar = () => {
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center space-x-2">
               <NavBarCategory />
+              <div className="hidden lg:block w-px h-6 bg-gray-300"></div>
+              {/* Store Sections */}
+              <ul className="hidden lg:flex space-x-2">
+                {STORE_SECTIONS.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.link}
+                      className="px-4 py-2 rounded-md text-sm font-medium text-blue-600 hover:bg-blue-50 active:bg-blue-100 transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
               <div className="hidden lg:block w-px h-6 bg-gray-300"></div>
               <ul className="hidden lg:flex space-x-2">
                 {NAVBAR_ITEMS.map((item) => (

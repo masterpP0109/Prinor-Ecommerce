@@ -1,6 +1,6 @@
 import React from 'react';
-import HomeCategoryList from '../../components/categories';
-import HomeSlider from '../../components/slider';
+import HomeCategoryList from '../../components/shared/categories';
+import HomeSlider from '../../components/shared/slider';
 
 const HomePage = () => {
   return (
