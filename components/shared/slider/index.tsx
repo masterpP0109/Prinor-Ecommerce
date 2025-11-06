@@ -6,39 +6,39 @@ import Link from 'next/link';
 
 const SlidesData = [
   {
-    imgUrl: "/images/PS5.webp",
-    url: "/product/65e6f80a9d4ab819d11581a2",
-    alt: "playstation5",
+    imgUrl: "/images/images/PS5.webp", // Keep or replace with service image
+    url: "/store/services/web-development",
+    alt: "web-development",
     msg: {
-      title: "PLAY STATION 5",
-      buttonText: "Shop now!",
+      title: "Web Development Services",
+      buttonText: "Get Started!",
     },
   },
   {
-    imgUrl: "/images/laptop.webp",
-    url: "/list/pc-laptops/laptops",
-    alt: "laptop",
+    imgUrl: "/images/images/appleAirpods.jpg", // Keep or replace
+    url: "/store/services/graphic-design",
+    alt: "graphic-design",
     msg: {
-      title: "Latest Laptops",
-      buttonText: "Shop now!",
+      title: "Professional Graphic Design",
+      buttonText: "Explore Services!",
     },
   },
   {
-    imgUrl: "/images/phone.webp",
-    url: "/list/smartphones",
-    alt: "phone",
+    imgUrl: "/images/images/appleWatch.jpg", // Keep or replace
+    url: "/store/digital/software",
+    alt: "software",
     msg: {
-      title: "Smartphones",
-      buttonText: "Shop now!",
+      title: "Digital Software Solutions",
+      buttonText: "Download Now!",
     },
   },
   {
-    imgUrl: "/images/tv.webp",
-    url: "/list/tvs",
-    alt: "tv",
+    imgUrl: "/images/images/lensAd.jpg", // Keep or replace
+    url: "/store/services/it-support",
+    alt: "it-support",
     msg: {
-      title: "4K TVs",
-      buttonText: "Shop now!",
+      title: "IT Support & Consulting",
+      buttonText: "Contact Us!",
     },
   },
 ];
@@ -83,7 +83,7 @@ const HomeSlider = () => {
 
   return (
     <div
-      className="w-full lg:ml-[272px] h-[240px] sm:h-[500px] rounded-xl overflow-hidden relative select-none"
+      className="col-span-7 w-full h-[240px] sm:h-[500px] rounded-xl overflow-hidden relative select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
