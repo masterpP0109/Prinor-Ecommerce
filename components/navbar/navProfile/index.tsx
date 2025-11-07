@@ -2,9 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '../../../context/AuthContext';
+import { useAuthModal } from '../../../context/AuthModalContext';
 
 const NavBarProfile = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const { openLogin } = useAuthModal();
 
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
@@ -21,19 +25,46 @@ const NavBarProfile = () => {
         </svg>
       </button>
 
-      {/* Profile Dropdown - Placeholder for now */}
+      {/* Profile Dropdown */}
       {isProfileOpen && (
         <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
           <div className="py-1">
-            <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Profile
-            </Link>
-            <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Orders
-            </Link>
-            <Link href="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              Login
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <div className="px-4 py-2 text-sm text-gray-900 border-b border-gray-200">
+                  <div className="font-medium">{user?.name || 'User'}</div>
+                  <div className="text-gray-500">{user?.email}</div>
+                </div>
+                <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Profile
+                </Link>
+                <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Orders
+                </Link>
+                <Link href="/auth/forgot-password" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Change Password
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    logout();
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsProfileOpen(false);
+                  openLogin();
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       )}
