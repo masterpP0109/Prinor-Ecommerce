@@ -6,7 +6,7 @@
   grid-template-columns: repeat(var(--cols, 3), 320px);
   grid-auto-rows: auto;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1.75rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
@@ -16,49 +16,12 @@
   --y: 50%;
   --r: 220px;
 }
-.what-we-offer-grid {
-  gap: 1.5rem;
-  --cols: 3;
-  grid-template-columns: repeat(3, 350px);
-}
-
-.what-we-offer-grid .chroma-card {
-  background: transparent;
-  width: 350px;
-  min-height: 550px;
-  position: relative;
-  overflow: hidden;
-}
-
-.what-we-offer-grid .chroma-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 1;
-}
-
-.what-we-offer-grid .chroma-card:hover::after {
-  opacity: 1;
-}
-
-.what-we-offer-grid .chroma-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
 
 @media (max-width: 1124px) {
   .chroma-grid {
     grid-template-columns: repeat(auto-fit, minmax(320px, 320px));
     gap: 0.5rem;
     padding: 0.5rem;
-  }
-
-  .what-we-offer-grid {
-    gap: 1rem;
   }
 }
 
@@ -80,7 +43,7 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: border-color 0.3s ease;
-  background: var(--card-gradient);
+  background: transparent;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);

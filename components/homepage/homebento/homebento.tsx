@@ -5,7 +5,7 @@ const Homebento = () => {
   return (
     <div>
         <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-white mb-12">Our Features</h2>
+            <h2 className="text-3xl font-bold text-left text-white mb-12">Our Features</h2>
             <MagicBento
               textAutoHide={true}
               enableStars={true}

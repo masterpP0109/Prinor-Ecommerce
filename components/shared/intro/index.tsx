@@ -22,7 +22,7 @@ Hardware. Software. Talent. All in One Digital Universe.
           software, and skilled creators all in one seamless ecosystem.
         </p>
         <Link
-          href="/store/services"
+          href="/services"
           className="intro-btn rounded-full inline-block bg-black/50 hover:bg-black/70 text-white font-semibold py-2 px-3 transition-colors duration-200 text-sm shadow-lg shadow-purple-500/50 border border-purple-500/30"
         >
           Explore Our Services

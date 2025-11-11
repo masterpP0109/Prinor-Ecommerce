@@ -5,7 +5,7 @@ const HomeCardSwap = () => {
   return (
     <div>
       <div className="w-[600px] ml-16 -mt-16 flex items-center justify-center">
-              <CardSwap width={650} height={450} cardDistance={60} verticalDistance={70} delay={6000} pauseOnHover={true} skewAmount={6} easing="elastic" onCardClick={() => {}}>
+              <CardSwap width={650} height={450} cardDistance={60} verticalDistance={70} delay={6000} pauseOnHover={true} skewAmount={6} easing="smooth" onCardClick={() => {}}>
                 <Card customClass="rounded-xl relative overflow-hidden hover:scale-105 transition-transform duration-300">
                   <img src="/images/images/anavid.jpg" alt="Web Development Services" className="w-full h-full object-cover rounded-xl" />
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl">

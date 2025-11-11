@@ -67,6 +67,15 @@ const CardSwap: React.FC<CardSwapProps> = ({
           promoteOverlap: 0.9,
           returnDelay: 0.05
         }
+      : easing === 'smooth'
+      ? {
+          ease: 'power2.inOut',
+          durDrop: 1.2,
+          durMove: 1.2,
+          durReturn: 1.2,
+          promoteOverlap: 0.7,
+          returnDelay: 0.1
+        }
       : {
           ease: 'power1.inOut',
           durDrop: 0.8,

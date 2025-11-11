@@ -13,124 +13,139 @@ if (typeof window !== 'undefined') {
 
 const serviceCategories = [
   { id: 'all', name: 'All Services', count: 32 },
-  { id: 'repair', name: 'Device Repair', count: 12 },
-  { id: 'installation', name: 'Installation', count: 8 },
-  { id: 'consulting', name: 'Consulting', count: 6 },
-  { id: 'maintenance', name: 'Maintenance', count: 4 },
-  { id: 'training', name: 'Training', count: 2 }
+  { id: 'web-development', name: 'Web Development', count: 12 },
+  { id: 'mobile-apps', name: 'Mobile Apps', count: 8 },
+  { id: 'digital-marketing', name: 'Digital Marketing', count: 6 },
+  { id: 'design', name: 'Design & Branding', count: 10 },
+  { id: 'tech-support', name: 'Tech Support', count: 8 }
 ];
 
 const featuredServices = [
   {
     id: 1,
-    name: 'iPhone Screen Repair',
-    category: 'repair',
-    price: 149,
-    originalPrice: 199,
+    title: 'Custom E-commerce Website',
+    category: 'web-development',
+    provider: 'TechCraft Studios',
     rating: 4.9,
-    reviews: 856,
-    image: '/images/products/iphone1.jpg',
-    badge: 'Popular',
-    available: true,
-    features: ['Genuine Parts', '30-Day Warranty', 'Same Day Service', 'Expert Technicians']
+    reviews: 247,
+    price: 2499,
+    deliveryTime: '14 days',
+    image: '/images/products/imac1.jpg',
+    badge: 'Pro',
+    featured: true,
+    skills: ['React', 'Next.js', 'Stripe', 'MongoDB'],
+    description: 'Complete e-commerce solution with payment integration, admin panel, and mobile optimization.'
   },
   {
     id: 2,
-    name: 'MacBook Data Recovery',
-    category: 'repair',
-    price: 299,
-    originalPrice: 399,
+    title: 'iOS & Android App Development',
+    category: 'mobile-apps',
+    provider: 'AppMasters',
     rating: 4.8,
-    reviews: 423,
-    image: '/images/products/imac1.jpg',
-    badge: 'Specialized',
-    available: true,
-    features: ['Hardware Diagnostics', 'Data Backup', 'Clean Room', 'Secure Process']
+    reviews: 189,
+    price: 4999,
+    deliveryTime: '30 days',
+    image: '/images/products/iphone1.jpg',
+    badge: 'Expert',
+    featured: true,
+    skills: ['React Native', 'Swift', 'Kotlin', 'Firebase'],
+    description: 'Cross-platform mobile app with native performance and seamless user experience.'
   },
   {
     id: 3,
-    name: 'Smart Home Installation',
-    category: 'installation',
-    price: 199,
-    originalPrice: 249,
-    rating: 4.7,
-    reviews: 312,
-    image: '/images/products/airpods1.jpg',
-    badge: 'Complete',
-    available: true,
-    features: ['Full Setup', 'Device Configuration', 'Testing', 'User Training']
+    title: 'Brand Identity & Logo Design',
+    category: 'design',
+    provider: 'CreativeMinds',
+    rating: 4.9,
+    reviews: 456,
+    price: 899,
+    deliveryTime: '7 days',
+    image: '/images/images/image1.jpg',
+    badge: 'Top Rated',
+    featured: true,
+    skills: ['Adobe Creative Suite', 'Figma', 'Brand Strategy', 'Typography'],
+    description: 'Complete brand identity package including logo, color palette, and brand guidelines.'
   },
   {
     id: 4,
-    name: 'IT Consulting Services',
-    category: 'consulting',
-    price: 99,
-    originalPrice: 129,
-    rating: 4.9,
-    reviews: 678,
-    image: '/images/products/asusRog1.jpg',
-    badge: 'Expert',
-    available: true,
-    features: ['System Analysis', 'Performance Optimization', 'Security Audit', 'Recommendations']
+    title: 'SEO & Digital Marketing Campaign',
+    category: 'digital-marketing',
+    provider: 'GrowthHackers',
+    rating: 4.7,
+    reviews: 324,
+    price: 1299,
+    deliveryTime: '21 days',
+    image: '/images/images/chart1.jpg',
+    badge: 'Growth',
+    featured: true,
+    skills: ['SEO', 'Google Ads', 'Social Media', 'Analytics'],
+    description: 'Comprehensive digital marketing strategy to boost your online presence and sales.'
   },
   {
     id: 5,
-    name: 'Annual Device Maintenance',
-    category: 'maintenance',
-    price: 79,
-    originalPrice: 99,
-    rating: 4.6,
-    reviews: 234,
-    image: '/images/products/appleWatch1.jpg',
-    badge: 'Preventive',
-    available: true,
-    features: ['Deep Cleaning', 'Software Updates', 'Hardware Check', 'Performance Boost']
+    title: 'Device Setup & Data Migration',
+    category: 'tech-support',
+    provider: 'TechSupport Pro',
+    rating: 4.8,
+    reviews: 567,
+    price: 199,
+    deliveryTime: '2 days',
+    image: '/images/products/imac2.jpg',
+    badge: 'Quick',
+    featured: false,
+    skills: ['Hardware Setup', 'Data Transfer', 'Software Installation', 'Training'],
+    description: 'Professional device setup and seamless data migration from your old devices.'
   },
   {
     id: 6,
-    name: 'Tech Training Workshop',
-    category: 'training',
-    price: 149,
-    originalPrice: 179,
-    rating: 4.8,
-    reviews: 189,
+    title: 'UI/UX Design for Web & Mobile',
+    category: 'design',
+    provider: 'DesignStudio',
+    rating: 4.9,
+    reviews: 298,
+    price: 1799,
+    deliveryTime: '10 days',
     image: '/images/products/ipadPro1.jpg',
-    badge: 'Educational',
-    available: false,
-    features: ['Hands-on Learning', 'Certified Instructors', 'Course Materials', 'Certificate']
+    badge: 'Creative',
+    featured: true,
+    skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
+    description: 'Modern, user-centered design that converts visitors into customers.'
   },
   {
     id: 7,
-    name: 'Gaming PC Optimization',
-    category: 'consulting',
-    price: 89,
-    originalPrice: 119,
-    rating: 4.7,
-    reviews: 567,
-    image: '/images/products/PS5.jpg',
-    badge: 'Gaming',
-    available: true,
-    features: ['FPS Optimization', 'Temperature Control', 'Driver Updates', 'Benchmark Testing']
+    title: 'WordPress Website Development',
+    category: 'web-development',
+    provider: 'WebCrafters',
+    rating: 4.6,
+    reviews: 178,
+    price: 1299,
+    deliveryTime: '10 days',
+    image: '/images/products/imac3.jpg',
+    badge: 'Popular',
+    featured: false,
+    skills: ['WordPress', 'PHP', 'MySQL', 'WooCommerce'],
+    description: 'Custom WordPress website with responsive design and content management system.'
   },
   {
     id: 8,
-    name: 'Camera Lens Cleaning',
-    category: 'maintenance',
-    price: 49,
-    originalPrice: 69,
+    title: 'Social Media Management',
+    category: 'digital-marketing',
+    provider: 'SocialGurus',
     rating: 4.5,
-    reviews: 145,
-    image: '/images/products/canon1.jpg',
-    badge: 'Precision',
-    available: true,
-    features: ['Dust Removal', 'Sensor Cleaning', 'Calibration', 'Quality Check']
+    reviews: 234,
+    price: 799,
+    deliveryTime: '30 days',
+    image: '/images/images/chart5.jpg',
+    badge: 'Monthly',
+    featured: false,
+    skills: ['Content Creation', 'Instagram', 'Facebook', 'LinkedIn'],
+    description: 'Complete social media management with content creation and engagement strategies.'
   }
 ];
 
 const ServicesPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
-  const [viewMode, setViewMode] = useState('grid');
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
@@ -148,8 +163,10 @@ const ServicesPage = () => {
         return b.price - a.price;
       case 'rating':
         return b.rating - a.rating;
-      case 'newest':
-        return b.id - a.id;
+      case 'delivery':
+        return parseInt(a.deliveryTime) - parseInt(b.deliveryTime);
+      case 'featured':
+        return b.featured ? 1 : -1;
       default:
         return 0;
     }
@@ -220,22 +237,22 @@ const ServicesPage = () => {
 
   const getBadgeColor = (badge: string) => {
     switch (badge) {
-      case 'Popular':
+      case 'Pro':
         return 'bg-purple-600 text-white';
-      case 'Specialized':
-        return 'bg-blue-600 text-white';
-      case 'Complete':
-        return 'bg-orange-500 text-white';
       case 'Expert':
-        return 'bg-red-500 text-white';
-      case 'Preventive':
-        return 'bg-pink-500 text-white';
-      case 'Educational':
+        return 'bg-blue-600 text-white';
+      case 'Top Rated':
+        return 'bg-orange-500 text-white';
+      case 'Growth':
         return 'bg-green-500 text-white';
-      case 'Gaming':
-        return 'bg-teal-500 text-white';
-      case 'Precision':
+      case 'Quick':
+        return 'bg-red-500 text-white';
+      case 'Creative':
+        return 'bg-pink-500 text-white';
+      case 'Popular':
         return 'bg-indigo-500 text-white';
+      case 'Monthly':
+        return 'bg-teal-500 text-white';
       default:
         return 'bg-gray-600 text-white';
     }
@@ -247,10 +264,10 @@ const ServicesPage = () => {
         {/* Header */}
         <div ref={headerRef} className="text-left mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Professional Tech Services
+            Professional Digital Services
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl">
-            Expert repair, installation, and consulting services for all your technology needs. Trusted by thousands of customers.
+            Connect with expert freelancers and agencies. From web development to digital marketing, find the perfect talent for your project.
           </p>
         </div>
 
@@ -289,7 +306,7 @@ const ServicesPage = () => {
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="rating">Highest Rated</option>
-                <option value="newest">Newest First</option>
+                <option value="delivery">Fastest Delivery</option>
               </select>
             </div>
 
@@ -302,22 +319,22 @@ const ServicesPage = () => {
         </div>
 
         {/* Services Grid */}
-        <div ref={servicesRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div ref={servicesRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {sortedServices.map((service) => (
             <Link
               key={service.id}
-              href={`/store/services/${service.id}`}
+              href={`/services/${service.id}`}
               className="service-card group bg-gray-900/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-800/50 hover:border-purple-500/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl cursor-pointer"
             >
               {/* Service Image */}
-              <div className="relative h-64 overflow-hidden">
+              <div className="relative h-48 overflow-hidden">
                 <Image
                   src={service.image}
-                  alt={service.name}
+                  alt={service.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
                 {/* Badge */}
                 <div className="absolute top-4 left-4">
@@ -326,53 +343,63 @@ const ServicesPage = () => {
                   </span>
                 </div>
 
-                {/* Availability Status */}
-                <div className="absolute top-4 right-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    service.available
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                  }`}>
-                    {service.available ? 'Available' : 'Booked'}
-                  </span>
-                </div>
+                {/* Featured Badge */}
+                {service.featured && (
+                  <div className="absolute top-4 right-4">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                      Featured
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Service Info */}
               <div className="p-6">
-                {/* Service Name */}
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-purple-300 transition-colors duration-300">
-                  {service.name}
+                {/* Provider Info */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {service.provider.charAt(0)}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-400">{service.provider}</span>
+                  </div>
+                  <span className="text-sm text-purple-400 font-medium">{service.deliveryTime}</span>
+                </div>
+
+                {/* Service Title */}
+                <h3 className="text-lg font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">
+                  {service.title}
                 </h3>
 
-                {/* Features */}
+                {/* Description */}
+                <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                  {service.description}
+                </p>
+
+                {/* Skills */}
                 <div className="mb-4">
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {service.features.slice(0, 2).map((feature, index) => (
-                      <span key={index} className="text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded">
-                        {feature}
+                  <div className="flex flex-wrap gap-1">
+                    {service.skills.slice(0, 3).map((skill, index) => (
+                      <span key={index} className="text-xs text-purple-300 bg-purple-900/30 px-2 py-1 rounded border border-purple-500/20">
+                        {skill}
                       </span>
                     ))}
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-purple-400">${service.price}</span>
-                    {service.originalPrice > service.price && (
-                      <span className="text-sm text-gray-500 line-through">${service.originalPrice}</span>
+                    {service.skills.length > 3 && (
+                      <span className="text-xs text-gray-400">+{service.skills.length - 3} more</span>
                     )}
                   </div>
-                  {service.originalPrice > service.price && (
-                    <span className="text-sm text-green-400">
-                      Save ${service.originalPrice - service.price}
-                    </span>
-                  )}
                 </div>
 
-                {/* Rating */}
+                {/* Price & Rating */}
                 <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-purple-400">
+                      ${service.price}
+                    </span>
+                  </div>
+
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center">
                       <svg className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -382,17 +409,12 @@ const ServicesPage = () => {
                     </div>
                     <span className="text-sm text-gray-400">({service.reviews})</span>
                   </div>
+                </div>
 
-                  {/* Book Service Button */}
-                  <button
-                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                      service.available
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                    }`}
-                    disabled={!service.available}
-                  >
-                    {service.available ? 'Book Now' : 'Fully Booked'}
+                {/* Contact Button */}
+                <div className="mt-4">
+                  <button className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all duration-300">
+                    Contact Provider
                   </button>
                 </div>
               </div>
@@ -406,9 +428,25 @@ const ServicesPage = () => {
         {/* Load More Button */}
         <div className="text-center mt-12">
           <button className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/25">
-            Load More Services
+            Browse All Services
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </button>
+        </div>
+
+        {/* CTA Section */}
+        <div className="mt-20 text-center bg-gradient-to-r from-purple-900/20 to-blue-900/20 rounded-2xl p-12 border border-purple-500/20">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Need a Custom Solution?
+          </h2>
+          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+            Can't find exactly what you're looking for? Post your project and get custom proposals from our expert community.
+          </p>
+          <button className="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+            Post Your Project
+            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </button>
         </div>
