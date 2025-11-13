@@ -38,9 +38,12 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [notifications, setNotifications] = useState<Array<{id: string, message: string, type: 'success' | 'error' | 'info'}>>([]);
+  const [notificationIdCounter, setNotificationIdCounter] = useState(0);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    const id = Date.now().toString();
+    // Generate a stable-unique id using timestamp + counter + random to avoid collisions
+    const id = `${Date.now()}-${notificationIdCounter}-${Math.floor(Math.random() * 1e6)}`;
+    setNotificationIdCounter(prev => prev + 1);
     setNotifications(prev => [...prev, { id, message, type }]);
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id));

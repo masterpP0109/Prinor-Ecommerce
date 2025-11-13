@@ -27,14 +27,17 @@ const NavBarProfile = () => {
 
       {/* Profile Dropdown */}
       {isProfileOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+        <div className="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-[#0b0b0f] via-[#18132a] to-[#10101a] border border-[#232323] rounded-md shadow-lg z-50">
           <div className="py-1">
             {isAuthenticated ? (
               <>
                 <div className="px-4 py-2 text-sm text-gray-900 border-b border-gray-200">
-                  <div className="font-medium">{user?.name || 'User'}</div>
+                  <div className="font-medium">{user ? `${user.firstName} ${user.lastName}` : 'User'}</div>
                   <div className="text-gray-500">{user?.email}</div>
                 </div>
+                <Link href={user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'seller' ? '/dashboard/seller' : '/dashboard/buyer'} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Dashboard
+                </Link>
                 <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Profile
                 </Link>

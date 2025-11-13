@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { authOptions } from './lib/auth/auth-options';
 
 // Simple in-memory rate limiting (in production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -44,7 +46,7 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Apply rate limiting to auth endpoints
   if (request.nextUrl.pathname.startsWith('/api/auth/')) {
     const clientIP = getClientIP(request);
@@ -57,9 +59,38 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Allow public access to home and store pages
+  const publicPaths = ['/', '/store'];
+  if (publicPaths.includes(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
+  // Role-based access control
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+  if (!token) {
+    // Redirect to signin if no token
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  }
+
+  const role = token.role as string;
+
+  const protectedRoutes: Record<string, string[]> = {
+    '/admin': ['admin'],
+    '/seller': ['seller'],
+    '/buyer': ['buyer', 'seller', 'admin'],
+    '/dashboard': ['buyer', 'seller', 'admin'],
+  };
+
+  const pathname = request.nextUrl.pathname;
+
+  if (protectedRoutes[pathname] && !protectedRoutes[pathname].includes(role)) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/api/auth/:path*',
+  matcher: ['/admin', '/seller', '/dashboard', '/buyer'],
 };

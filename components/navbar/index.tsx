@@ -8,6 +8,8 @@ import NavCategoryDropdown from './navCategoryDropdown';
 import NavBarFavorite from './navFavorite/index';
 import NavBarProfile from './navProfile/index';
 import NavBarShopping from './navShopping/index';
+import { useAuth } from '../../hooks/useAuth';
+import { useRouter } from 'next/navigation';
 
 
 const MAIN_CATEGORIES = [
@@ -46,35 +48,15 @@ const MAIN_CATEGORIES = [
 ];
 
 const StoreNavBar = () => {
-  const [hideNavbar, setHideNavbar] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setHideNavbar(true);
-      } else {
-        setHideNavbar(false);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   return (
-    <nav
-      className={`fixed w-full z-10 bg-black pt-0 transition-all duration-700 ${
-        hideNavbar ? 'top-[-180px]' : 'top-0'
-      }`}
-    >
-      <div className="container mx-auto px-4">
+    <nav className="w-full z-50 bg-black pt-0 relative">
+      <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <Image src="/logo.png" alt="TechNexus" width={125} height={40} />
+            <Image src="/images/logo.png" alt="TechNexus" width={125} height={40} />
           </Link>
 
           {/* Search Bar */}
@@ -96,6 +78,8 @@ const StoreNavBar = () => {
           {/* User Actions */}
           <div className="flex items-center space-x-4">
             <NavBarFavorite />
+            {/* Dashboard link visible when authenticated */}
+            <AuthDashboardLink />
             <NavBarProfile />
             <NavBarShopping />
           </div>
@@ -127,7 +111,7 @@ const StoreNavBar = () => {
               <Link
                 href="/deals"
                 className="text-sm text-purple-400 hover:text-purple-300 flex items-center"
-                style={{ backgroundImage: 'url(/discount-icon.png)', backgroundRepeat: 'no-repeat', backgroundPosition: 'left center', paddingLeft: '20px' }}
+                style={{ backgroundImage: 'url(/icons/discountIcon.svg)', backgroundRepeat: 'no-repeat', backgroundPosition: 'left center', paddingLeft: '20px' }}
               >
                 Top Deals
               </Link>
@@ -140,3 +124,19 @@ const StoreNavBar = () => {
 };
 
 export default StoreNavBar;
+
+const AuthDashboardLink: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+  if (!user) return null;
+  const role = user.role || 'buyer';
+  const href = role === 'admin' ? '/dashboard/admin' : role === 'seller' ? '/dashboard/seller' : '/dashboard/buyer';
+  return (
+    <button
+      onClick={() => router.push(href)}
+      className="hidden sm:inline-block text-sm text-gray-300 hover:text-white"
+    >
+      Dashboard
+    </button>
+  );
+};

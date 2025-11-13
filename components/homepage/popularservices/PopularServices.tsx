@@ -332,7 +332,7 @@ const DigitalEcosystem = () => {
           {activeServices.map((service) => (
             <Link
               key={service.id}
-              href={activeCategory === 'premium-electronics' || activeCategory === 'digital-software' ? `/products/${service.id}` : `/services/${service.id}`}
+              href={activeCategory === 'premium-electronics' || activeCategory === 'digital-software' ? `/store/products/${service.id}` : `/store/services/${service.id}`}
               className="service-card group bg-gray-900/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-800/50 hover:border-purple-500/30 transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl cursor-pointer"
             >
               {/* Service Image */}

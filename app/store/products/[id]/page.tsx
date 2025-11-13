@@ -357,9 +357,25 @@ const ProductDetailPage = () => {
                 >
                   {product.inStock ? 'Add to Cart' : 'Notify When Available'}
                 </button>
-                
-                <button className="w-full py-4 border-2 border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg font-semibold transition-all duration-300">
-                  Buy Now
+
+                <button
+                  className="w-full py-4 border-2 border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg font-semibold transition-all duration-300"
+                  disabled={!product.inStock}
+                  onClick={() => {
+                    if (product.inStock) {
+                      for (let i = 0; i < quantity; i++) {
+                        addToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.images[0]
+                        });
+                      }
+                      window.location.href = '/store/checkout';
+                    }
+                  }}
+                >
+                  {product.inStock ? 'Buy Now' : 'Out of Stock'}
                 </button>
               </div>
             </div>
