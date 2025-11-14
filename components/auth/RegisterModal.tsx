@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
 import Modal from '../ui/modal';
 
 interface RegisterModalProps {
@@ -18,7 +17,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +33,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
       return;
     }
 
-    if (!recaptchaToken) {
-      setError('Please complete the reCAPTCHA');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
@@ -48,7 +41,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, recaptchaToken }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();
@@ -128,17 +121,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
               disabled={isLoading || success}
             />
           </div>
-          <div className="flex justify-center mb-4">
-            <ReCAPTCHA
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-              onChange={(token) => setRecaptchaToken(token)}
-              theme="dark"
-            />
-          </div>
 
           <button
             type="submit"
-            disabled={isLoading || success || !recaptchaToken}
+            disabled={isLoading || success}
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200"
           >
             {isLoading ? 'Creating Account...' : success ? 'Account Created!' : 'Sign Up'}

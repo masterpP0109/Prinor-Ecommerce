@@ -55,7 +55,7 @@ const StoreNavBar = () => {
       <div className="container mx-auto px-4 relative">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="flex-shrink-0 hidden">
             <Image src="/images/logo.png" alt="TechNexus" width={125} height={40} />
           </Link>
 
