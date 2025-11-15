@@ -14,39 +14,48 @@ const cardData = [
     title: 'Analytics',
     description: 'Track user behavior',
     label: 'Insights',
-    image: '/images/products/PS5.jpg'
+    video: '/videos/Cool%20products.mp4',
+    poster: '/images/analytics.jpg'
   },
   {
     color: '#060010',
     title: 'Dashboard',
     description: 'Centralized data view',
-    label: 'Overview'
+    label: 'Overview',
+    video: '/videos/ReDj49wP9QHH80zh.webm',
+    poster: '/images/dasbord.jpg'
   },
   {
     color: '#060010',
     title: 'Collaboration',
     description: 'Work together seamlessly',
     label: 'Teamwork',
-    image: '/images/products/appleWatch3.jpg'
+    video: '/videos/luvid.mp4',
+    poster: '/images/collabo.jpg'
   },
   {
     color: '#060010',
     title: 'Automation',
     description: 'Streamline workflows',
-    label: 'Efficiency'
+    label: 'Efficiency',
+    video: '/videos/anav.webm',
+    poster: '/images/automation.jpg'
   },
   {
     color: '#060010',
     title: 'Integration',
     description: 'Connect favorite tools',
     label: 'Connectivity',
-    image: '/images/products/asusZen1.jpg'
+    video: '/videos/anav.webm',
+    poster: '/images/integration.jpg'
   },
   {
     color: '#060010',
     title: 'Security',
     description: 'Enterprise-grade protection',
-    label: 'Protection'
+    label: 'Protection',
+    video: '/videos/luvid.mp4',
+    poster: '/images/security.jpg'
   }
 ];
 
@@ -459,6 +468,61 @@ const BentoCardGrid = ({ children, gridRef }) => (
   </div>
 );
 
+const VideoCard = ({
+  videoSrc,
+  posterSrc,
+  title,
+  description,
+  label,
+  glowColor = DEFAULT_GLOW_COLOR,
+  disableAnimations = false
+}) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const handleMouseEnter = () => {
+    videoRef.current?.play();
+  };
+
+  const handleMouseLeave = () => {
+    videoRef.current?.pause();
+    videoRef.current.currentTime = 0; // Reset for smooth restart
+  };
+
+  return (
+    <div
+      className="relative w-full h-full overflow-hidden rounded-2xl group cursor-pointer"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20 pointer-events-none" />
+
+      {/* Overlay Text */}
+      <div className="absolute z-30 bottom-4 left-4 right-4 text-white p-4">
+        <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-white/20 text-white mb-2">
+          {label}
+        </span>
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="text-sm opacity-90">{description}</p>
+      </div>
+
+      {/* Video */}
+      <video
+        ref={videoRef}
+        src={videoSrc}
+        poster={posterSrc}
+        muted
+        playsInline
+        preload="metadata"
+        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+      />
+
+      {/* Hover Play Pulse */}
+      <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-20 transition bg-white rounded-full blur-3xl scale-150 pointer-events-none" />
+    </div>
+  );
+};
+
 const useMobileDetection = () => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -490,6 +554,32 @@ const MagicBento = ({
   const gridRef = useRef(null);
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
+
+  // GSAP entrance animations
+  useEffect(() => {
+    if (shouldDisableAnimations) return;
+
+    const cards = gridRef.current?.querySelectorAll('.magic-bento-card');
+    if (!cards) return;
+
+    gsap.set(cards, {
+      opacity: 0,
+      y: 50,
+      scale: 0.9,
+      rotationX: 15
+    });
+
+    gsap.to(cards, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotationX: 0,
+      duration: 0.8,
+      ease: 'back.out(1.7)',
+      stagger: 0.1,
+      delay: 0.2
+    });
+  }, [shouldDisableAnimations]);
 
   return (
     <>
@@ -527,25 +617,27 @@ const MagicBento = ({
                 clickEffect={clickEffect}
                 enableMagnetism={enableMagnetism}
               >
-                {card.image && (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundImage: `url(${card.image})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      filter: 'blur(1px)',
-                      zIndex: -1
-                    }}
+                {card.video ? (
+                  <VideoCard
+                    videoSrc={card.video}
+                    posterSrc={card.poster}
+                    title={card.title}
+                    description={card.description}
+                    label={card.label}
+                    glowColor={glowColor}
+                    disableAnimations={shouldDisableAnimations}
                   />
+                ) : (
+                  <>
+                    <div className="magic-bento-card__header">
+                      <div className="magic-bento-card__label">{card.label}</div>
+                    </div>
+                    <div className="magic-bento-card__content">
+                      <h2 className="magic-bento-card__title">{card.title}</h2>
+                      <p className="magic-bento-card__description">{card.description}</p>
+                    </div>
+                  </>
                 )}
-                <div className="magic-bento-card__header">
-                  <div className="magic-bento-card__label">{card.label}</div>
-                </div>
-                <div className="magic-bento-card__content">
-                  <h2 className="magic-bento-card__title">{card.title}</h2>
-                  <p className="magic-bento-card__description">{card.description}</p>
-                </div>
               </ParticleCard>
             );
           }
@@ -662,25 +754,27 @@ const MagicBento = ({
                 el.addEventListener('click', handleClick);
               }}
             >
-              {card.image && (
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage: `url(${card.image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    filter: 'blur(1px)',
-                    zIndex: -1
-                  }}
+              {card.video ? (
+                <VideoCard
+                  videoSrc={card.video}
+                  posterSrc={card.poster}
+                  title={card.title}
+                  description={card.description}
+                  label={card.label}
+                  glowColor={glowColor}
+                  disableAnimations={shouldDisableAnimations}
                 />
+              ) : (
+                <>
+                  <div className="magic-bento-card__header">
+                    <div className="magic-bento-card__label">{card.label}</div>
+                  </div>
+                  <div className="magic-bento-card__content">
+                    <h2 className="magic-bento-card__title">{card.title}</h2>
+                    <p className="magic-bento-card__description">{card.description}</p>
+                  </div>
+                </>
               )}
-              <div className="magic-bento-card__header">
-                <div className="magic-bento-card__label">{card.label}</div>
-              </div>
-              <div className="magic-bento-card__content">
-                <h2 className="magic-bento-card__title">{card.title}</h2>
-                <p className="magic-bento-card__description">{card.description}</p>
-              </div>
             </div>
           );
         })}
