@@ -13,28 +13,24 @@ if (typeof window !== 'undefined') {
 
 const offerItems = [
   {
-    video: "/videos/electronics.mp4",
     image: "/images/images/rogAd.jpg",
     title: "Electronics",
     description: "Power your world with cutting-edge laptops, phones, accessories, and devices that keep you connected.",
     link: "/store/products"
   },
   {
-    video: "/videos/digital-software.mp4",
     image: "/images/images/digitals.jpg",
     title: "Digital Software",
     description: "Tools that unlock creativity. Software, apps, and games — instantly downloadable, ready to use.",
     link: "/store/services"
   },
   {
-    video: "/videos/professional-services.mp4",
     image: "/images/images/chart4.jpg",
     title: "Professional Services",
     description: "Human talent meets innovation. Hire skilled experts in web design, marketing, tutoring, and repairs.",
     link: "/store/services"
   },
   {
-    video: "/videos/gaming-entertainment.mp4",
     image: "/images/products/PS5.jpg",
     title: "Gaming & Entertainment",
     description: "Immerse yourself in premium gaming experiences with the latest consoles, games, and entertainment systems.",

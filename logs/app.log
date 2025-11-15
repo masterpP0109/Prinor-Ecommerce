@@ -1,2 +1,2 @@
-{"t":0,"l":"info","m":"Log session started","d":{"timestamp":"2025-11-15T07:25:24.584Z"}}
-{"t":155143,"l":"info","m":"[OrganizationService] Successfully fetched organization","d":{"organizationId":"a1a6edc1-deb8-44a9-8df6-3132cee419c1","codeIndexingEnabled":false}}
+{"t":0,"l":"info","m":"Log session started","d":{"timestamp":"2025-11-15T08:26:24.861Z"}}
+{"t":177540,"l":"info","m":"[OrganizationService] Successfully fetched organization","d":{"organizationId":"a1a6edc1-deb8-44a9-8df6-3132cee419c1","codeIndexingEnabled":false}}

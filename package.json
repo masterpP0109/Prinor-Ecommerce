@@ -20,6 +20,7 @@
     "chart.js": "^4.5.1",
     "express-rate-limit": "^8.2.1",
     "framer-motion": "^12.23.24",
+    "geist": "^1.5.1",
     "gsap": "^3.13.0",
     "jsonwebtoken": "^9.0.2",
     "jsvectormap": "^1.5.3",
