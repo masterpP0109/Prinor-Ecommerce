@@ -5,6 +5,7 @@ import HomeIntro from "../components/shared/intro";
 import HomeCardSwap from "@/components/homepage/cardswap/cardSwap";
 import Homebento from "@/components/homepage/homebento/homebento";
 import WhatWeOffer from "@/components/homepage/whatweoffer";
+import TrendingSection from "@/components/homepage/trending/TrendingSection";
 import PlatformFeatures from "@/components/homepage/platformfeatures/PlatformFeatures";
 import DigitalEcosystem from "@/components/homepage/popularservices/PopularServices";
 
@@ -20,6 +21,8 @@ const HomePage = () => {
         </section>
 
         <WhatWeOffer />
+
+       
 
         <PlatformFeatures />
 

@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
@@ -14,22 +15,26 @@ const offerItems = [
   {
     image: "/images/images/rogAd.jpg",
     title: "Electronics",
-    description: "Power your world with cutting-edge laptops, phones, accessories, and devices that keep you connected."
+    description: "Power your world with cutting-edge laptops, phones, accessories, and devices that keep you connected.",
+    link: "/store/products"
   },
   {
     image: "/images/images/digitals.jpg",
     title: "Digital Software",
-    description: "Tools that unlock creativity. Software, apps, and games — instantly downloadable, ready to use."
+    description: "Tools that unlock creativity. Software, apps, and games — instantly downloadable, ready to use.",
+    link: "/store/services"
   },
   {
     image: "/images/images/chart4.jpg",
     title: "Professional Services",
-    description: "Human talent meets innovation. Hire skilled experts in web design, marketing, tutoring, and repairs."
+    description: "Human talent meets innovation. Hire skilled experts in web design, marketing, tutoring, and repairs.",
+    link: "/store/services"
   },
   {
     image: "/images/products/PS5.jpg",
     title: "Gaming & Entertainment",
-    description: "Immerse yourself in premium gaming experiences with the latest consoles, games, and entertainment systems."
+    description: "Immerse yourself in premium gaming experiences with the latest consoles, games, and entertainment systems.",
+    link: "/store/products"
   }
 ];
 
@@ -110,10 +115,10 @@ const WhatWeOffer = () => {
         {/* Cards Grid */}
         <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {offerItems.map((item, index) => (
-            <div
-              key={index}
-              className="offer-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] cursor-pointer h-80"
-            >
+            <Link key={index} href={item.link}>
+              <div
+                className="offer-card group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] cursor-pointer h-80"
+              >
               {/* Full Background Image */}
               <div className="absolute inset-0">
                 <Image
@@ -154,7 +159,8 @@ const WhatWeOffer = () => {
 
               {/* Subtle border glow on hover */}
               <div className="absolute inset-0 rounded-2xl border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
       </div>
