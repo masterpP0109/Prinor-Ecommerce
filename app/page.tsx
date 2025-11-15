@@ -27,6 +27,7 @@ const HomePage = () => {
         <PlatformFeatures />
 
         <DigitalEcosystem />
+        <TrendingSection/>  
 
         <section className="py-16 bg-black">
           <Homebento />
