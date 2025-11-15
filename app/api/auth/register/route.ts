@@ -4,31 +4,11 @@ import { prisma } from "@/lib/db/mongodb";
 import { sendVerificationEmail } from "@/lib/email";
 import crypto from "crypto";
 
+export const runtime = "nodejs";
+
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, recaptchaToken } = await request.json();
-
-    // Verify reCAPTCHA
-    if (!recaptchaToken) {
-      return NextResponse.json(
-        { error: "reCAPTCHA verification required" },
-        { status: 400 }
-      );
-    }
-
-    const recaptchaResponse = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
-      { method: "POST" }
-    );
-
-    const recaptchaData = await recaptchaResponse.json();
-
-    if (!recaptchaData.success) {
-      return NextResponse.json(
-        { error: "reCAPTCHA verification failed" },
-        { status: 400 }
-      );
-    }
+    const { name, email, password } = await request.json();
 
     // Validate input
     if (!name || !email || !password) {
