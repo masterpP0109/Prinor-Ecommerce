@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../hooks/useAuth';
 import Modal from '../ui/modal';
 
 interface RegisterModalProps {
@@ -10,13 +12,17 @@ interface RegisterModalProps {
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitchToLogin }) => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('BUYER');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const { signUp } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,27 +42,26 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
+      const userRole = await signUp({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (userRole) {
         setSuccess(true);
-        setTimeout(() => {
-          onClose();
-          onSwitchToLogin();
-        }, 2000);
+        // Redirect to role-based dashboard
+        router.push(`/dashboard/${userRole.toLowerCase()}`);
+        onClose();
       } else {
-        setError(data.error || 'Registration failed');
+        // If signUp didn't return role, redirect to login
+        onClose();
+        onSwitchToLogin();
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      setError(error.message || 'An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -80,9 +85,20 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
           <div>
             <input
               type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              required
+              disabled={isLoading || success}
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               required
               disabled={isLoading || success}
@@ -120,6 +136,18 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSwitch
               required
               disabled={isLoading || success}
             />
+          </div>
+          <div>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              disabled={isLoading || success}
+              required
+            >
+              <option value="BUYER">Buyer</option>
+              <option value="SELLER">Seller</option>
+            </select>
           </div>
 
           <button

@@ -339,12 +339,7 @@ const ProductDetailPage = () => {
                   onClick={() => {
                     if (product.inStock) {
                       for (let i = 0; i < quantity; i++) {
-                        addToCart({
-                          id: product.id,
-                          name: product.name,
-                          price: product.price,
-                          image: product.images[0]
-                        });
+                        addToCart(product.id.toString());
                       }
                     }
                   }}
@@ -364,12 +359,7 @@ const ProductDetailPage = () => {
                   onClick={() => {
                     if (product.inStock) {
                       for (let i = 0; i < quantity; i++) {
-                        addToCart({
-                          id: product.id,
-                          name: product.name,
-                          price: product.price,
-                          image: product.images[0]
-                        });
+                        addToCart(product.id.toString());
                       }
                       window.location.href = '/store/checkout';
                     }

@@ -1,24 +1,31 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
 
 interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
+  id: string;
+  productId: string;
   quantity: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+  };
 }
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  addToCart: (productId: string) => Promise<void>;
+  removeFromCart: (itemId: string) => Promise<void>;
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
   showNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
+  refreshCart: () => Promise<void>;
+  loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -36,12 +43,13 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const { data: session, status } = useSession();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [notifications, setNotifications] = useState<Array<{id: string, message: string, type: 'success' | 'error' | 'info'}>>([]);
   const [notificationIdCounter, setNotificationIdCounter] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    // Generate a stable-unique id using timestamp + counter + random to avoid collisions
     const id = `${Date.now()}-${notificationIdCounter}-${Math.floor(Math.random() * 1e6)}`;
     setNotificationIdCounter(prev => prev + 1);
     setNotifications(prev => [...prev, { id, message, type }]);
@@ -50,37 +58,108 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }, 6000);
   };
 
-  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
-    setCartItems(prev => {
-      const existing = prev.find(cartItem => cartItem.id === item.id);
-      if (existing) {
-        const newQuantity = existing.quantity + 1;
-        showNotification(`${item.name} quantity updated to ${newQuantity} in cart!`, 'success');
-        return prev.map(cartItem =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: newQuantity }
-            : cartItem
-        );
-      }
-      showNotification(`${item.name} added to cart!`, 'success');
-      return [...prev, { ...item, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
-
-  const updateQuantity = (id: number, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(id);
+  const refreshCart = async () => {
+    if (status !== 'authenticated') {
+      setCartItems([]);
       return;
     }
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+
+    try {
+      const response = await fetch('/api/cart');
+      if (response.ok) {
+        const data = await response.json();
+        setCartItems(data.items || []);
+      } else {
+        console.error('Failed to fetch cart');
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      setCartItems([]);
+    }
+  };
+
+  const addToCart = async (productId: string) => {
+    if (status !== 'authenticated') {
+      showNotification('Please sign in to add items to cart', 'error');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (response.ok) {
+        await refreshCart();
+        showNotification('Item added to cart!', 'success');
+      } else {
+        const error = await response.json();
+        showNotification(error.error || 'Failed to add item to cart', 'error');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      showNotification('Failed to add item to cart', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromCart = async (itemId: string) => {
+    if (status !== 'authenticated') return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+
+      if (response.ok) {
+        await refreshCart();
+        showNotification('Item removed from cart', 'success');
+      } else {
+        showNotification('Failed to remove item from cart', 'error');
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      showNotification('Failed to remove item from cart', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateQuantity = async (itemId: string, quantity: number) => {
+    if (status !== 'authenticated') return;
+
+    if (quantity <= 0) {
+      await removeFromCart(itemId);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, quantity }),
+      });
+
+      if (response.ok) {
+        await refreshCart();
+      } else {
+        showNotification('Failed to update quantity', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      showNotification('Failed to update quantity', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearCart = () => {
@@ -88,7 +167,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      refreshCart();
+    } else if (status === 'unauthenticated') {
+      setCartItems([]);
+    }
+  }, [status]);
 
   return (
     <CartContext.Provider
@@ -101,6 +188,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         totalItems,
         totalPrice,
         showNotification,
+        refreshCart,
+        loading,
       }}
     >
       {children}

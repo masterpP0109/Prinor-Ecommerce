@@ -1,211 +1,164 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "../../hooks/useAuth";
-import { motion, AnimatePresence } from "framer-motion";
-import { FcGoogle } from "react-icons/fc";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../hooks/useAuth';
 
-const SignUpForm = ({ onSwitchToSignIn }: { onSwitchToSignIn?: () => void }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [company, setCompany] = useState(""); // optional
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("buyer");
-  const [agree, setAgree] = useState(false);
-  const [error, setError] = useState("");
-
+const SignUpForm: React.FC = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('BUYER');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const { signUp } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
+    setSuccess(false);
 
-    if (!agree) {
-      setError("You must agree to the Terms of Service and Privacy Policy.");
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const roleResult = await signUp({
+      const userRole = await signUp({
         firstName,
         lastName,
-        company: company || undefined,
         email,
         password,
         role,
       });
 
-      // If signUp performed auto-login and returned a role, redirect to dashboard
-      if (roleResult === 'admin') router.push('/dashboard/admin');
-      else if (roleResult === 'seller') router.push('/dashboard/seller');
-      else if (roleResult === 'buyer') router.push('/dashboard/buyer');
-      else router.push('/auth/signin');
-    } catch (err) {
-      setError("Sign up failed. Please try again.");
+      if (userRole) {
+        setSuccess(true);
+        // Redirect to role-based dashboard
+        router.push(`/dashboard/${userRole.toLowerCase()}`);
+      } else {
+        // If signUp didn't return role, redirect to login
+        router.push('/auth/signin');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.25 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-8"
-        >
-          <h1 className="text-2xl font-semibold text-center mb-6">Create Your Account</h1>
-
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                  className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                  className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Company (optional)
-              </label>
-              <input
-                type="text"
-                id="company"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="Company name"
-                className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Role
-              </label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full rounded-xl border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              >
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-
-            <div className="flex items-center space-x-2 mt-2">
-              <input
-                type="checkbox"
-                id="agree"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="agree" className="text-sm text-gray-600 dark:text-gray-400">
-                I agree to the{" "}
-                <a href="#" className="text-blue-600 hover:underline">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="#" className="text-blue-600 hover:underline">
-                  Privacy Policy
-                </a>
-                .
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-xl transition duration-200"
-            >
-              Create Account
-            </button>
-          </form>
-
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="h-px w-16 bg-gray-300 dark:bg-gray-700" />
-            <span className="text-sm text-gray-500">or</span>
-            <div className="h-px w-16 bg-gray-300 dark:bg-gray-700" />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => console.log("Sign up with Google")}
-            className="mt-4 w-full flex items-center justify-center border border-gray-300 dark:border-gray-700 rounded-xl py-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition duration-200"
+    <div className="w-full max-w-md mx-auto">
+      <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
+      {error && (
+        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md">
+          <p className="text-red-400 text-sm">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-md">
+          <p className="text-green-400 text-sm">Account created successfully! Redirecting to dashboard...</p>
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+            disabled={isLoading || success}
+          />
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+            disabled={isLoading || success}
+          />
+        </div>
+        <div>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+            disabled={isLoading || success}
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+            disabled={isLoading || success}
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            required
+            disabled={isLoading || success}
+          />
+        </div>
+        <div>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            disabled={isLoading || success}
+            required
           >
-            <FcGoogle className="mr-2 text-xl" /> Sign up with Google
-          </button>
+            <option value="BUYER">Buyer</option>
+            <option value="SELLER">Seller</option>
+          </select>
+        </div>
 
-          <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            Already have an account?{" "}
-            <button
-              type="button"
-              onClick={onSwitchToSignIn}
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Click here to sign in →
-            </button>
-          </p>
-        </motion.div>
-      </AnimatePresence>
+        <button
+          type="submit"
+          disabled={isLoading || success}
+          className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-md transition-colors duration-200"
+        >
+          {isLoading ? 'Creating Account...' : success ? 'Account Created!' : 'Sign Up'}
+        </button>
+      </form>
+      <div className="mt-6 text-center">
+        <p className="text-gray-400">
+          Already have an account?{' '}
+          <a
+            href="/auth/signin"
+            className="text-purple-400 hover:text-purple-300 font-semibold"
+          >
+            Sign In
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

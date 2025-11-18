@@ -8,10 +8,10 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json();
+    const { firstName, lastName, company, email, password, role } = await request.json();
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Validate role - ADMIN role is not allowed during sign-up
+    const validRoles = ['BUYER', 'SELLER'];
+    const userRole = role && validRoles.includes(role.toUpperCase()) ? role.toUpperCase() : 'BUYER';
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -43,12 +47,16 @@ export async function POST(request: NextRequest) {
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
+    // Combine first and last name
+    const name = `${firstName} ${lastName}`;
+
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        role: userRole as any,
       },
     });
 

@@ -15,6 +15,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  BUYER
+  SELLER
+  ADMIN
+}
+
 model User {
   id            String    @id @default(cuid()) @map("_id")
   name          String?
@@ -22,12 +28,17 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
-  role          String    @default("user")
+  role          Role      @default(BUYER)
+  isApproved    Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   accounts Account[]
   sessions Session[]
+  adminRequests AdminRequest[]
+  reviewedRequests AdminRequest[] @relation("AdminRequestReviewer")
+  cart Cart?
+  orders Order[]
 
   @@map("users")
 }
@@ -70,4 +81,99 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Product {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  description String?
+  price       Float
+  image       String?
+  category    String?
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+
+  @@map("products")
+}
+
+model Cart {
+  id       String     @id @default(cuid()) @map("_id")
+  userId   String
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items    CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([userId])
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(cuid()) @map("_id")
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+
+  @@map("cartitems")
+}
+
+model Order {
+  id            String      @id @default(cuid()) @map("_id")
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  totalAmount   Float
+  status        OrderStatus @default(PENDING)
+  paymentIntent String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String @id @default(cuid()) @map("_id")
+  orderId   String
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float
+
+  @@map("orderitems")
+}
+
+model AdminRequest {
+  id          String        @id @default(cuid()) @map("_id")
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason      String?
+  status      RequestStatus @default(PENDING)
+  requestedAt DateTime      @default(now())
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  reviewer    User?         @relation("AdminRequestReviewer", fields: [reviewedBy], references: [id])
+
+  @@map("adminrequests")
 }

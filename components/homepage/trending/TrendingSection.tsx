@@ -121,11 +121,11 @@ const TrendingSection = () => {
     <section ref={sectionRef} className="py-20 bg-black">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div ref={headerRef} className="text-center mb-16">
+        <div ref={headerRef} className="text-left mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Trending Now
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-400 max-w-3xl leading-relaxed">
             Discover the most popular devices and services trending in our marketplace
           </p>
         </div>

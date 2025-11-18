@@ -13,7 +13,7 @@ const HomePage = () => {
     <div className="bg-black min-h-screen overflow-hidden">
       <div className="container mx-auto px-4 mt-40">
         <section className="hero-section h-[90vh]">
-          <div className="relative flex justify-center items-center gap-2">
+          <div className="relative flex justify-center items-center gap-1 md:gap-2">
             <HomeIntro />
             <HomeCardSwap />
           </div>

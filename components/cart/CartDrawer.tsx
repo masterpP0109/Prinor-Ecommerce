@@ -58,8 +58,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                     {/* Product Image */}
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                       <Image
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product.image}
+                        alt={item.product.name}
                         fill
                         className="object-cover"
                       />
@@ -68,9 +68,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-white truncate">
-                          {item.name}
+                          {item.product.name}
                         </h3>
-                        <p className="text-sm text-gray-400">${item.price}</p>
+                        <p className="text-sm text-gray-400">${item.product.price}</p>
 
                       {/* Quantity Controls */}
                       <div className="flex items-center space-x-2 mt-2">

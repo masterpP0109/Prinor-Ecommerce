@@ -11,6 +11,7 @@ interface User {
   email: string;
   password: string;
   role: string;
+  isApproved?: boolean;
 }
 
 
@@ -57,7 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   company: (session.user as any).company ?? '',
   email: session.user.email ?? '',
   password: '', // optional placeholder
-  role: (session.user as any).role ?? 'user',
+  role: (session.user as any).role ?? 'BUYER',
+  isApproved: (session.user as any).isApproved ?? false,
 });
 
     } else {

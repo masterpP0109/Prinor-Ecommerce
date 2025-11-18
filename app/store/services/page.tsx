@@ -5,125 +5,131 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useCart } from '../../../context/CartContext';
 
 // Register ScrollTrigger plugin
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  image?: string;
+  category?: string;
+  available: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const serviceCategories = [
-  { id: 'all', name: 'All Services', count: 32 },
-  { id: 'repair', name: 'Device Repair', count: 12 },
-  { id: 'installation', name: 'Installation', count: 8 },
-  { id: 'consulting', name: 'Consulting', count: 6 },
-  { id: 'maintenance', name: 'Maintenance', count: 4 },
-  { id: 'training', name: 'Training', count: 2 }
+  { id: 'all', name: 'All Services', count: 0 },
+  { id: 'repair', name: 'Device Repair', count: 0 },
+  { id: 'installation', name: 'Installation', count: 0 },
+  { id: 'consulting', name: 'Consulting', count: 0 },
+  { id: 'maintenance', name: 'Maintenance', count: 0 },
+  { id: 'training', name: 'Training', count: 0 }
 ];
 
 const featuredServices = [
   {
-    id: 1,
+    id: '1',
     name: 'iPhone Screen Repair',
     category: 'repair',
     price: 149,
     originalPrice: 199,
-    rating: 4.9,
-    reviews: 856,
-    image: '/images/products/iphone1.jpg',
-    badge: 'Popular',
+    image: '/images/products/iphone2.jpg',
     available: true,
+    rating: 4.8,
+    reviews: 156,
+    badge: 'Popular',
     features: ['Genuine Parts', '30-Day Warranty', 'Same Day Service', 'Expert Technicians']
   },
   {
-    id: 2,
+    id: '2',
     name: 'MacBook Data Recovery',
     category: 'repair',
     price: 299,
-    originalPrice: 399,
-    rating: 4.8,
-    reviews: 423,
     image: '/images/products/imac1.jpg',
-    badge: 'Specialized',
     available: true,
-    features: ['Hardware Diagnostics', 'Data Backup', 'Clean Room', 'Secure Process']
+    rating: 4.9,
+    reviews: 89,
+    badge: 'Expert',
+    features: ['Hardware Diagnostics', 'Data Backup', 'Secure Recovery', 'Free Consultation']
   },
   {
-    id: 3,
+    id: '3',
     name: 'Smart Home Installation',
     category: 'installation',
-    price: 199,
-    originalPrice: 249,
+    price: 399,
+    image: '/images/products/appleWatch1.jpg',
+    available: false,
     rating: 4.7,
-    reviews: 312,
-    image: '/images/products/airpods1.jpg',
+    reviews: 234,
     badge: 'Complete',
-    available: true,
-    features: ['Full Setup', 'Device Configuration', 'Testing', 'User Training']
+    features: ['Full Setup', 'Device Configuration', 'User Training', '24/7 Support']
   },
   {
-    id: 4,
+    id: '4',
     name: 'IT Consulting Services',
     category: 'consulting',
-    price: 99,
-    originalPrice: 129,
-    rating: 4.9,
-    reviews: 678,
-    image: '/images/products/asusRog1.jpg',
-    badge: 'Expert',
+    price: 199,
+    image: '/images/images/chart2.jpg',
     available: true,
-    features: ['System Analysis', 'Performance Optimization', 'Security Audit', 'Recommendations']
+    rating: 4.9,
+    reviews: 312,
+    badge: 'Specialized',
+    features: ['System Analysis', 'Security Audit', 'Performance Optimization', 'Strategic Planning']
   },
   {
-    id: 5,
+    id: '5',
     name: 'Annual Device Maintenance',
     category: 'maintenance',
-    price: 79,
-    originalPrice: 99,
-    rating: 4.6,
-    reviews: 234,
-    image: '/images/products/appleWatch1.jpg',
-    badge: 'Preventive',
+    price: 99,
+    image: '/images/products/asusRog1.jpg',
     available: true,
-    features: ['Deep Cleaning', 'Software Updates', 'Hardware Check', 'Performance Boost']
+    rating: 4.6,
+    reviews: 178,
+    badge: 'Preventive',
+    features: ['Regular Checkups', 'Software Updates', 'Hardware Cleaning', 'Performance Monitoring']
   },
   {
-    id: 6,
+    id: '6',
     name: 'Tech Training Workshop',
     category: 'training',
-    price: 149,
-    originalPrice: 179,
+    price: 79,
+    image: '/images/images/digitals.jpg',
+    available: true,
     rating: 4.8,
-    reviews: 189,
-    image: '/images/products/ipadPro1.jpg',
-    badge: 'Educational',
-    available: false,
-    features: ['Hands-on Learning', 'Certified Instructors', 'Course Materials', 'Certificate']
-  },
-  {
-    id: 7,
-    name: 'Gaming PC Optimization',
-    category: 'consulting',
-    price: 89,
-    originalPrice: 119,
-    rating: 4.7,
-    reviews: 567,
-    image: '/images/products/PS5.jpg',
-    badge: 'Gaming',
-    available: true,
-    features: ['FPS Optimization', 'Temperature Control', 'Driver Updates', 'Benchmark Testing']
-  },
-  {
-    id: 8,
-    name: 'Camera Lens Cleaning',
-    category: 'maintenance',
-    price: 49,
-    originalPrice: 69,
-    rating: 4.5,
     reviews: 145,
-    image: '/images/products/canon1.jpg',
-    badge: 'Precision',
+    badge: 'Educational',
+    features: ['Hands-on Learning', 'Certified Instructors', 'Small Groups', 'Course Materials']
+  },
+  {
+    id: '7',
+    name: 'Gaming PC Assembly',
+    category: 'installation',
+    price: 249,
+    image: '/images/products/PS5.jpg',
     available: true,
-    features: ['Dust Removal', 'Sensor Cleaning', 'Calibration', 'Quality Check']
+    rating: 4.9,
+    reviews: 267,
+    badge: 'Gaming',
+    features: ['Custom Build', 'Performance Testing', 'Cable Management', 'Warranty Included']
+  },
+  {
+    id: '8',
+    name: 'Network Security Setup',
+    category: 'consulting',
+    price: 349,
+    image: '/images/images/securoty.jpg',
+    available: true,
+    rating: 4.7,
+    reviews: 198,
+    badge: 'Precision',
+    features: ['Firewall Configuration', 'VPN Setup', 'Threat Detection', 'Monitoring Tools']
   }
 ];
 
@@ -149,7 +155,7 @@ const ServicesPage = () => {
       case 'rating':
         return b.rating - a.rating;
       case 'newest':
-        return b.id - a.id;
+        return parseInt(b.id) - parseInt(a.id);
       default:
         return 0;
     }
@@ -360,11 +366,11 @@ const ServicesPage = () => {
                 <div className="mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-bold text-purple-400">${service.price}</span>
-                    {service.originalPrice > service.price && (
+                    {service.originalPrice && service.originalPrice > service.price && (
                       <span className="text-sm text-gray-500 line-through">${service.originalPrice}</span>
                     )}
                   </div>
-                  {service.originalPrice > service.price && (
+                  {service.originalPrice && service.originalPrice > service.price && (
                     <span className="text-sm text-green-400">
                       Save ${service.originalPrice - service.price}
                     </span>

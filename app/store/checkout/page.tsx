@@ -1,34 +1,24 @@
 'use client';
 
 import React from 'react';
-
-
+import { useSession } from 'next-auth/react';
 import Link from "next/link";
 
-// Mock cart data
-const mockCart = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    image: "/images/products/headphones.jpg",
-    color: "Black",
-    size: "M",
-    price: 99.99,
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Smart Watch",
-    image: "/images/products/smartwatch.jpg",
-    color: "Silver",
-    size: "L",
-    price: 149.99,
-    quantity: 2,
-  },
-];
+interface CartItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image?: string;
+  };
+}
 
 const CheckoutPage = () => {
-  const [cart, setCart] = React.useState(mockCart);
+  const { data: session, status } = useSession();
+  const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = React.useState("card");
   const [payment, setPayment] = React.useState({
     name: "",
@@ -37,22 +27,163 @@ const CheckoutPage = () => {
     expYear: "",
     cvv: "",
   });
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [orderPlaced, setOrderPlaced] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  React.useEffect(() => {
+    if (status === 'authenticated') {
+      fetchCart();
+    } else if (status === 'unauthenticated') {
+      setLoading(false);
+    }
+  }, [status]);
+
+  const fetchCart = async () => {
+    try {
+      const response = await fetch('/api/cart');
+      if (response.ok) {
+        const data = await response.json();
+        setCartItems(data.items || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const shipping: number = 0;
   const total = subtotal + shipping;
 
-  const updateQuantity = (id: number, qty: number) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, qty) } : item
-      )
-    );
+  const updateQuantity = async (itemId: string, qty: number) => {
+    if (qty < 1) return;
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, quantity: qty }),
+      });
+
+      if (response.ok) {
+        await fetchCart();
+      }
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+    }
   };
 
-  const removeItem = (id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const removeItem = async (itemId: string) => {
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+
+      if (response.ok) {
+        await fetchCart();
+      }
+    } catch (error) {
+      console.error('Failed to remove item:', error);
+    }
   };
+
+  const handlePayment = async () => {
+    if (status !== 'authenticated') {
+      alert('Please sign in to complete your order');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Create payment intent
+      const response = await fetch('/api/payments/create-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      const { paymentIntentId } = await response.json();
+
+      // Simulate payment success (in real implementation, this would be handled by Stripe)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Trigger webhook to create order
+      await fetch('/api/payments/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'payment_intent.succeeded',
+          data: {
+            object: {
+              id: paymentIntentId,
+              metadata: { userId: (session.user as any).id }
+            }
+          }
+        }),
+      });
+
+      setOrderPlaced(true);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      alert('Payment failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading checkout...</div>
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Please Sign In</h1>
+          <p className="text-gray-400 mb-8">You need to be signed in to checkout.</p>
+          <Link
+            href="/auth/login"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Your Cart is Empty</h1>
+          <p className="text-gray-400 mb-8">Add some items to your cart before checking out.</p>
+          <Link
+            href="/store/products"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Browse Products
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
   <div className="min-h-screen flex items-center justify-center text-white py-8 px-2 bg-gradient-to-br from-[#0b0b0f] via-[#010103] to-[#18132a]">
@@ -81,59 +212,67 @@ const CheckoutPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {cart.map((item) => (
-                  <tr key={item.id} className="border-b last:border-0">
-                    <td className="py-3 flex items-center gap-3 min-w-[180px]">
-                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded object-cover border" />
-                      <div>
-                        <div className="font-medium text-gray-900">{item.name}</div>
-                        <div className="text-xs text-gray-400">{item.color}</div>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <select
-                        className="border border-gray-200 rounded px-2 py-1 text-xs"
-                        value={item.size}
-                        onChange={() => {}}
-                        disabled
-                      >
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="10.5">10.5</option>
-                      </select>
-                    </td>
-                    <td className="py-3 text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          className="w-6 h-6 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        >
-                          -
-                        </button>
-                        <span className="px-2">{item.quantity}</span>
-                        <button
-                          className="w-6 h-6 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                    <td className="py-3 text-right font-semibold text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </td>
-                    <td className="py-3 text-right">
-                      <button
-                        className="text-gray-400 hover:text-red-500"
-                        onClick={() => removeItem(item.id)}
-                        aria-label="Remove"
-                      >
-                        ×
-                      </button>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-400">
+                      Loading cart...
                     </td>
                   </tr>
-                ))}
+                ) : cartItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-400">
+                      Your cart is empty
+                    </td>
+                  </tr>
+                ) : (
+                  cartItems.map((item) => (
+                    <tr key={item.id} className="border-b last:border-0">
+                      <td className="py-3 flex items-center gap-3 min-w-[180px]">
+                        <img
+                          src={item.product.image || '/images/default-product.jpg'}
+                          alt={item.product.name}
+                          className="w-12 h-12 rounded object-cover border"
+                        />
+                        <div>
+                          <div className="font-medium text-gray-900">{item.product.name}</div>
+                          <div className="text-xs text-gray-400">${item.product.price}</div>
+                        </div>
+                      </td>
+                      <td className="py-3">
+                        <span className="text-sm text-gray-600">-</span>
+                      </td>
+                      <td className="py-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            className="w-6 h-6 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          >
+                            -
+                          </button>
+                          <span className="px-2">{item.quantity}</span>
+                          <button
+                            className="w-6 h-6 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-3 text-right font-semibold text-gray-900">
+                        ${(item.product.price * item.quantity).toFixed(2)}
+                      </td>
+                      <td className="py-3 text-right">
+                        <button
+                          className="text-gray-400 hover:text-red-500"
+                          onClick={() => removeItem(item.id)}
+                          aria-label="Remove"
+                        >
+                          ×
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
