@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 interface User {
@@ -47,25 +46,19 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (session?.user) {
-     setUser({
-  firstName: (session.user as any).firstName ?? '',
-  lastName: (session.user as any).lastName ?? '',
-  company: (session.user as any).company ?? '',
-  email: session.user.email ?? '',
-  password: '', // optional placeholder
-  role: (session.user as any).role ?? 'BUYER',
-  isApproved: (session.user as any).isApproved ?? false,
-});
-
-    } else {
-      setUser(null);
+    // Load user from localStorage on mount
+    try {
+      const storedUser = localStorage.getItem('authUser');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (e) {
+      // ignore
     }
-  }, [session]);
+  }, []);
 
   const router = useRouter();
 
@@ -90,13 +83,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     }
 
-    // Update minimal user state if role present
-    if (data?.user?.role) {
-      setUser((prev) => ({
-        ...(prev ?? { firstName: '', lastName: '', email: '', password: '', role: data.user.role }),
+    // Update user state
+    if (data?.user) {
+      const [firstName, ...lastNameParts] = (data.user.name || '').split(' ');
+      const lastName = lastNameParts.join(' ');
+      const newUser: User = {
+        firstName: firstName || '',
+        lastName: lastName || '',
+        email: data.user.email,
+        password: '',
         role: data.user.role,
-        email,
-      } as any));
+        isApproved: data.user.isApproved || false,
+      };
+      setUser(newUser);
+      try {
+        localStorage.setItem('authUser', JSON.stringify(newUser));
+      } catch (e) {
+        // ignore
+      }
     }
 
     // Return role for the caller to decide redirect behavior
@@ -138,8 +142,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    await signOut({ callbackUrl: '/' });
+  const logout = () => {
+    setUser(null);
+    try {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+    } catch (e) {
+      // ignore
+    }
   };
 
   const setUserRole = (role: string) => {
@@ -148,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     user,
-    isLoading: status === 'loading',
+    isLoading: false,
     isAuthenticated: !!user,
     login,
     signUp,

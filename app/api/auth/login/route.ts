@@ -29,7 +29,16 @@ export async function POST(request: NextRequest) {
 
     const token = sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
 
-    return NextResponse.json({ token, user: { id: user.id, role: user.role } });
+    return NextResponse.json({
+      token,
+      user: {
+        id: user.id,
+        role: user.role,
+        email: user.email,
+        name: user.name,
+        isApproved: user.isApproved
+      }
+    });
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });

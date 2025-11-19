@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send email notifications to all admins
-    const emailPromises = admins.map(admin =>
+    const emailPromises = admins.map((admin: { email: string }) =>
       sendAdminRequestEmail(admin.email, currentUser.email!, reason)
     );
 

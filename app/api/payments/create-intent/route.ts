@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate total
     const totalAmount = cart.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum: number, item: any) => sum + item.product.price * item.quantity,
       0
     );
 

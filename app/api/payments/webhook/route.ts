@@ -66,7 +66,7 @@ async function handleSuccessfulPayment(userId: string, paymentIntentId: string) 
 
     // Calculate total
     const totalAmount = cart.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum: number, item: any) => sum + item.product.price * item.quantity,
       0
     );
 
@@ -78,7 +78,7 @@ async function handleSuccessfulPayment(userId: string, paymentIntentId: string) 
         status: "PAID",
         paymentIntent: paymentIntentId,
         items: {
-          create: cart.items.map((item) => ({
+          create: cart.items.map((item: any) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.product.price,

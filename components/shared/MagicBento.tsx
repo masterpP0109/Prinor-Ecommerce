@@ -478,15 +478,32 @@ const VideoCard = ({
   disableAnimations = false
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
-    videoRef.current?.play();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(error => {
+          if (error.name !== 'AbortError') {
+            console.error('Video play error:', error);
+          }
+        });
+      }
+    }, 100);
   };
 
   const handleMouseLeave = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     videoRef.current?.pause();
     videoRef.current.currentTime = 0; // Reset for smooth restart
   };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   return (
     <div
