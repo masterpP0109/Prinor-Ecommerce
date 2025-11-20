@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output = "../../../node_modules/@prisma/client"
+  output = "../generated"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -177,3 +177,4 @@ model AdminRequest {
 
   @@map("adminrequests")
 }
+
