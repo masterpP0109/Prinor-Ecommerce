@@ -18,11 +18,9 @@ const SignInForm = ({ onSwitchToSignUp }: { onSwitchToSignUp?: () => void }) => 
     setError('');
 
     try {
-      const role = await login(email, password);
-      // Role-based redirect
-      if (role === 'admin') router.push('/dashboard/admin');
-      else if (role === 'seller') router.push('/dashboard/seller');
-      else router.push('/dashboard/buyer');
+      await login(email, password);
+      // Redirect to general dashboard, which will handle role-based routing
+      router.push('/dashboard');
     } catch (err) {
       setError('Invalid email or password');
     }

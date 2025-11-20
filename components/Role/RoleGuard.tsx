@@ -11,7 +11,9 @@ interface RoleGuardProps {
 const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
   const { user } = useAuth();
 
-  if (!user || !user.role || !allowedRoles.includes(user.role.toUpperCase()) || (user.role.toUpperCase() === 'ADMIN' && !user.isApproved)) {
+  const userRoleUpper = user.role.toUpperCase();
+  const allowedRolesUpper = allowedRoles.map(role => role.toUpperCase());
+  if (!user || !user.role || !allowedRolesUpper.includes(userRoleUpper) || (userRoleUpper === 'ADMIN' && !user.isApproved)) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">

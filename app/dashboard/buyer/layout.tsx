@@ -7,7 +7,7 @@ export default function BuyerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleGuard allowedRoles={['BUYER', 'SELLER', 'ADMIN']}>
+    <RoleGuard allowedRoles={['BUYER']}>
       <div className="flex min-h-screen bg-gradient-to-br from-[#0b0b0f] via-[#18132a] to-[#18132a] relative">
         {/* Noise overlay */}
         <div className="pointer-events-none fixed inset-0 z-0 opacity-40" style={{backgroundImage: 'url(/images/noise.png)', mixBlendMode: 'overlay'}} />

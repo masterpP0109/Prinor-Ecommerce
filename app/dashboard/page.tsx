@@ -9,7 +9,11 @@ const DashboardPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (user?.role) {
+    if (!user) {
+      router.push('/auth/signin');
+      return;
+    }
+    if (user.role) {
       if (user.role === 'ADMIN' && user.isApproved) {
         router.push('/dashboard/admin');
       } else if (user.role === 'SELLER') {
@@ -22,6 +26,14 @@ const DashboardPage = () => {
       }
     }
   }, [user, router]);
+
+  if (!user) {
+    return <div>Redirecting to sign in...</div>;
+  }
+
+  if (user.role === 'ADMIN' && !user.isApproved) {
+    return <div>Your admin account is pending approval. Please wait for approval to access the dashboard.</div>;
+  }
 
   return <div>Redirecting to your dashboard...</div>;
 };

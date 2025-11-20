@@ -45,8 +45,8 @@ const SignUpForm: React.FC = () => {
 
       if (userRole) {
         setSuccess(true);
-        // Redirect to role-based dashboard
-        router.push(`/dashboard/${userRole.toLowerCase()}`);
+        // Redirect to general dashboard, which will handle role-based routing
+        router.push('/dashboard');
       } else {
         // If signUp didn't return role, redirect to login
         router.push('/auth/signin');
